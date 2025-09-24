@@ -1,29 +1,29 @@
 # Global owners
-* @andresertel
+* @andresousar
 
 # Backend specific
-/apps/api/ @andresertel
-/apps/api/src/ @andresertel
-/apps/api/prisma/ @andresertel
+/apps/api/ @andresousar
+/apps/api/src/ @andresousar
+/apps/api/prisma/ @andresousar
 
 # Frontend specific
-/apps/web/ @andresertel
-/apps/web/src/ @andresertel
+/apps/web/ @andresousar
+/apps/web/src/ @andresousar
 
 # Shared packages
-/packages/ @andresertel
+/packages/ @andresousar
 
 # Documentation
-/docs/ @andresertel
-README.md @andresertel
+/docs/ @andresousar
+README.md @andresousar
 
 # GitHub workflows
-/.github/ @andresertel
-/.github/workflows/ @andresertel
+/.github/ @andresousar
+/.github/workflows/ @andresousar
 
 # Scripts
-/scripts/ @andresertel
+/scripts/ @andresousar
 
 # Configuration files
-package.json @andresertel
-.gitignore @andresertel
+package.json @andresousar
+.gitignore @andresousar

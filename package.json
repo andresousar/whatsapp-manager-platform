@@ -45,12 +45,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/andresertel/whatsapp-manager-platform.git"
+    "url": "https://github.com/andresousar/whatsapp-manager-platform.git"
   },
   "bugs": {
-    "url": "https://github.com/andresertel/whatsapp-manager-platform/issues"
+    "url": "https://github.com/andresousar/whatsapp-manager-platform/issues"
   },
-  "homepage": "https://github.com/andresertel/whatsapp-manager-platform#readme",
+  "homepage": "https://github.com/andresousar/whatsapp-manager-platform#readme",
   "devDependencies": {
     "concurrently": "^8.2.2",
     "husky": "^8.0.3",
