@@ -47,7 +47,7 @@ Uma plataforma profissional para gerenciamento centralizado de múltiplos númer
 
 1. **Clone o repositório:**
 ```bash
-git clone https://github.com/seu-usuario/whatsapp-manager-platform.git
+git clone https://github.com/andresertel/whatsapp-manager-platform.git
 cd whatsapp-manager-platform
 ```
 
@@ -234,7 +234,7 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 ## 🆘 Suporte
 
 - **Documentação:** [docs/](docs/)
-- **Issues:** [GitHub Issues](https://github.com/seu-usuario/whatsapp-manager-platform/issues)
+- **Issues:** [GitHub Issues](https://github.com/andresertel/whatsapp-manager-platform/issues)
 - **Email:** support@whatsapp-manager-platform.com
 
 ## 🎯 Roadmap

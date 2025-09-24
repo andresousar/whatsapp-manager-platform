@@ -9,9 +9,9 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 10
     reviewers:
-      - "seu-usuario"
+      - "andresertel"
     assignees:
-      - "seu-usuario"
+      - "andresertel"
     commit-message:
       prefix: "chore(api)"
       include: "scope"
@@ -25,9 +25,9 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 10
     reviewers:
-      - "seu-usuario"
+      - "andresertel"
     assignees:
-      - "seu-usuario"
+      - "andresertel"
     commit-message:
       prefix: "chore(web)"
       include: "scope"
@@ -41,9 +41,9 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 5
     reviewers:
-      - "seu-usuario"
+      - "andresertel"
     assignees:
-      - "seu-usuario"
+      - "andresertel"
     commit-message:
       prefix: "chore(root)"
       include: "scope"
@@ -57,9 +57,9 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 5
     reviewers:
-      - "seu-usuario"
+      - "andresertel"
     assignees:
-      - "seu-usuario"
+      - "andresertel"
     commit-message:
       prefix: "chore(actions)"
       include: "scope"
