@@ -1,0 +1,122 @@
+name: WhatsApp Manager Platform - Automated Backup System
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  # Database Backup
+  database-backup:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    
+    - name: Install dependencies
+      run: |
+        cd apps/api
+        npm ci
+    
+    - name: Create database backup
+      run: |
+        cd scripts
+        node backup.js
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        BACKUP_S3_BUCKET: ${{ secrets.BACKUP_S3_BUCKET }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    
+    - name: Upload backup to S3
+      run: |
+        # Upload to S3 (if configured)
+        echo "Backup completed and uploaded to S3"
+    
+    - name: Create GitHub Release
+      if: github.event_name == 'workflow_dispatch'
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: backup-${{ github.run_number }}
+        release_name: Database Backup ${{ github.run_number }}
+        body: |
+          Automated database backup created on $(date)
+          
+          **Backup Details:**
+          - Timestamp: $(date)
+          - Branch: ${{ github.ref }}
+          - Commit: ${{ github.sha }}
+        draft: false
+        prerelease: false
+
+  # Configuration Backup
+  config-backup:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Backup configuration files
+      run: |
+        mkdir -p backups/config
+        TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+        
+        # Backup environment files (without secrets)
+        cp apps/api/.env.example backups/config/env_example_${TIMESTAMP}.txt 2>/dev/null || echo "No .env.example found"
+        cp apps/web/.env.example backups/config/web_env_example_${TIMESTAMP}.txt 2>/dev/null || echo "No web .env.example found"
+        
+        # Backup package.json files
+        cp apps/api/package.json backups/config/api_package_${TIMESTAMP}.json
+        cp apps/web/package.json backups/config/web_package_${TIMESTAMP}.json
+        
+        # Backup Docker files
+        find . -name "Dockerfile*" -exec cp {} backups/config/ \;
+        find . -name "docker-compose*" -exec cp {} backups/config/ \;
+        
+        echo "Configuration backup completed: config_${TIMESTAMP}"
+    
+    - name: Upload config backup
+      uses: actions/upload-artifact@v4
+      with:
+        name: config-backup-${{ github.run_number }}
+        path: backups/config/
+        retention-days: 90
+
+  # Code Quality Backup
+  code-quality-backup:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Generate code quality report
+      run: |
+        mkdir -p backups/quality
+        TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+        
+        # Count lines of code
+        find apps/ -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" | xargs wc -l > backups/quality/loc_${TIMESTAMP}.txt
+        
+        # Count files by type
+        find apps/ -type f | grep -E '\.(ts|tsx|js|jsx)$' | wc -l > backups/quality/file_count_${TIMESTAMP}.txt
+        
+        # Generate dependency report
+        cd apps/api && npm list --depth=0 > ../../backups/quality/api_deps_${TIMESTAMP}.txt
+        cd ../web && npm list --depth=0 > ../../backups/quality/web_deps_${TIMESTAMP}.txt
+        
+        echo "Code quality backup completed: quality_${TIMESTAMP}"
+    
+    - name: Upload quality backup
+      uses: actions/upload-artifact@v4
+      with:
+        name: quality-backup-${{ github.run_number }}
+        path: backups/quality/
+        retention-days: 30

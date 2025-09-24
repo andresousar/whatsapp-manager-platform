@@ -1,0 +1,152 @@
+name: WhatsApp Manager Platform - CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  # Backend Tests
+  backend-tests:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: whatsapp_business_platform_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: apps/api/package-lock.json
+    
+    - name: Install dependencies
+      run: |
+        cd apps/api
+        npm ci
+    
+    - name: Run linting
+      run: |
+        cd apps/api
+        npm run lint
+    
+    - name: Run tests
+      run: |
+        cd apps/api
+        npm run test
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/whatsapp_business_platform_test
+        REDIS_URL: redis://localhost:6379
+    
+    - name: Build application
+      run: |
+        cd apps/api
+        npm run build
+
+  # Frontend Tests
+  frontend-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: apps/web/package-lock.json
+    
+    - name: Install dependencies
+      run: |
+        cd apps/web
+        npm ci
+    
+    - name: Run linting
+      run: |
+        cd apps/web
+        npm run lint
+    
+    - name: Run tests
+      run: |
+        cd apps/web
+        npm run test
+    
+    - name: Build application
+      run: |
+        cd apps/web
+        npm run build
+
+  # Security Scan
+  security-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  # Database Backup (on main branch)
+  database-backup:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Create database backup
+      run: |
+        # Create backup directory
+        mkdir -p backups/database
+        
+        # Create timestamp
+        TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+        
+        # Create backup file
+        echo "Creating database backup: backup_${TIMESTAMP}.sql"
+        # Note: In production, you would use actual database connection
+        echo "-- Database backup created at $(date)" > backups/database/backup_${TIMESTAMP}.sql
+        echo "-- This is a placeholder for actual database backup" >> backups/database/backup_${TIMESTAMP}.sql
+    
+    - name: Upload backup to GitHub
+      uses: actions/upload-artifact@v4
+      with:
+        name: database-backup-${{ github.run_number }}
+        path: backups/
+        retention-days: 30

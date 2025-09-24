@@ -1,0 +1,29 @@
+# Global owners
+* @seu-usuario
+
+# Backend specific
+/apps/api/ @seu-usuario
+/apps/api/src/ @seu-usuario
+/apps/api/prisma/ @seu-usuario
+
+# Frontend specific
+/apps/web/ @seu-usuario
+/apps/web/src/ @seu-usuario
+
+# Shared packages
+/packages/ @seu-usuario
+
+# Documentation
+/docs/ @seu-usuario
+README.md @seu-usuario
+
+# GitHub workflows
+/.github/ @seu-usuario
+/.github/workflows/ @seu-usuario
+
+# Scripts
+/scripts/ @seu-usuario
+
+# Configuration files
+package.json @seu-usuario
+.gitignore @seu-usuario
